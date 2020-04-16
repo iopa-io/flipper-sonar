@@ -1,7 +1,6 @@
-# Flipper Sonar
-> Flipper for Node, Electron and Browser
+# Flipper Sonar SDK -- for Node, Electron and Browser
 
-This is the mono repository containing Custom Flipper Client for Node, Electron and Browser based applications.
+This is the mono repository containing Custom [Flipper](https://fbflipper.com) Client for Node, Electron and Browser based applications.
 
 These clients use the exact same rsocket protocol with private certificate exchange as the Flipper iOS, Android and React-Native SDKs, and so you do not need a custom Flipper Desktop application to use this -- the direct download from fbflipper.com will work.
 
