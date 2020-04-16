@@ -1,0 +1,21 @@
+{
+  "name": "root",
+  "private": true,
+  "devDependencies": {
+    "lerna": "^3.20.2",
+    "rimraf": "^3.0.2",
+    "flipper": "^0.37.0",
+    "react": "^16.13.0",
+    "@types/react": "^16.9.34",
+    "typescript": "^3.8.3"
+  },
+  "resolutions": {
+  },
+  "scripts": {
+    "clean": "rimraf **/node_modules && rimraf **/yarn.lock && rimraf **/dist"
+  },
+  "workspaces": [
+    "packages/*",
+    "plugins/*"
+  ]
+}

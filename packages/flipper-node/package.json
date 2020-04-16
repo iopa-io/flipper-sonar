@@ -1,0 +1,31 @@
+{
+  "name": "flipper-node",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "repository": "https://github.com/iopa-io/flipper-sonar",
+  "dependencies": {
+    "fs-extra": "^9.0.0",
+    "openssl-wrapper": "^0.3.4",
+    "react": "^16.13.0",
+    "rsocket-core": "^0.0.19",
+    "rsocket-flowable": "^0.0.14",
+    "rsocket-tcp-client": "^0.0.19",
+    "rsocket-types": "^0.0.16",
+    "tmp": "^0.1.0",
+    "exponential-backoff": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.1.0",
+    "@types/node": "^13.11.1",
+    "@types/rsocket-core": "^0.0.5",
+    "@types/rsocket-tcp-client": "^0.0.1",
+    "@types/tmp": "^0.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-berun": "^6.0.19",
+    "sucrase": "^3.13.0",
+    "tmp": "^0.1.0",
+    "typescript": "^3.8.3",
+    "typescript-eslint": "^0.0.1-alpha.0"
+  }
+}

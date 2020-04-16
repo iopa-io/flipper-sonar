@@ -1,0 +1,17 @@
+{
+  "name": "flipper-plugin-sonar-crash-reporter",
+  "version": "1.0.0",
+  "description": "A plugin which will display a crash, used on non iOS/Android/Metro platforms",
+  "main": "desktop/index.tsx",
+  "repository": "https://github.com/iopa-io/flipper-sonar",
+  "license": "MIT",
+  "keywords": ["flipper-plugin", "sonar-plugin"],
+  "title": "Crash Reporter",
+  "dependencies": {
+    "unicode-substring": "^1.0.0"
+  },
+  "devDependencies": {
+    "flipper": "^0.37.0",
+    "@berun/scripts": "^3.0.19"
+  }
+}

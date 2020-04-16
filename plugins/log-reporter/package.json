@@ -1,0 +1,14 @@
+{
+  "name": "flipper-plugin-sonar-log-reporter",
+  "version": "1.0.0",
+  "main": "desktop/index.tsx",
+  "dependencies": {},
+  "title": "Logs",
+  "icon": "arrow-right",
+  "repository": "https://github.com/iopa-io/flipper-sonar",
+  "license": "MIT",
+  "keywords": ["flipper-plugin", "sonar-plugin"],
+  "devDependencies": {
+    "@berun/scripts": "^3.0.19"
+  }
+}
