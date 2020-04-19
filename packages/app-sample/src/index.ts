@@ -1,5 +1,4 @@
 /* eslint-disable import/no-named-default */
-import sample from 'flipper-plugin-sonar-sample/device/index'
 import sonarCrashReporter from 'flipper-plugin-sonar-crash-reporter/device/index'
 import sonarLogger from 'flipper-plugin-sonar-log-reporter/device/index'
 
@@ -8,10 +7,7 @@ import client from 'flipper-node'
 async function init() {
   client.addPlugin(sonarLogger)
   client.addPlugin(sonarCrashReporter)
-  client.addPlugin(sample)
-  client.start()
-  await client.isReady
-  console.log('Flipper SDK Ready')
+  await client.start()
   sonarLogger.log('HELLO WORLD')
   setTimeout(
     _ =>

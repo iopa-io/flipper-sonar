@@ -6,7 +6,7 @@
   "repository": "https://github.com/iopa-io/flipper-sonar",
   "license": "MIT",
   "keywords": ["flipper-plugin", "sonar-plugin"],
-  "title": "Crash Reporter",
+  "title": "Errors and Crashes",
   "dependencies": {
     "unicode-substring": "^1.0.0"
   },

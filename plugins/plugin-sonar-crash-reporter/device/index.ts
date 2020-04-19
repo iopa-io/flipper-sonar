@@ -1,7 +1,9 @@
 import { FlipperPlugin, FlipperConnection } from 'flipper-node'
 
+import { name as id } from '../package.json'
+
 class CustomPluginOnDevice implements FlipperPlugin {
-  public id = 'flipper-plugin-sonar-crash-reporter'
+  public id = id
 
   private connection: FlipperConnection
 

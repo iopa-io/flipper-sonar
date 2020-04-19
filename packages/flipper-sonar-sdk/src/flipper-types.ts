@@ -36,6 +36,11 @@ export interface FlipperPlugin {
    * Returns true if the plugin is meant to be run in background too, otherwise it returns false.
    */
   runInBackground(): boolean
+
+  /**
+   * Indicates the schema and version of this plugin
+   */
+  schema?: 'https://schemas.iopa.io/flipper/sonar/1.0'
 }
 
 /**
@@ -48,6 +53,15 @@ export interface FlipperResponder {
   error(response: any): void
 }
 
+export interface FlipperIopaRequest {
+  'iopa.Method': string
+  'iopa.Body': any
+}
+
+export interface FlipperIopaContext extends FlipperIopaRequest {
+  response: FlipperResponder
+}
+
 /**
  * A connection between a FlipperPlugin and the desktop Flipper application. Register request
  * handlers to respond to calls made by the desktop application or directly send messages to the
@@ -56,18 +70,23 @@ export interface FlipperResponder {
 export interface FlipperConnection {
   /** Deprecated, use fetch instead which allows for error tracking */
   send(method: string, data: any): void
+  send(request: FlipperIopaRequest): void
 
   /** Call a method on your desktop plugin implementation. Call .catch() on the returned
    * promise to handle any errors returned from the client. */
   fetch<D, R>(method: string, data: D): Promise<R>
+  fetch<D, R>(request: FlipperIopaRequest): Promise<R>
 
-  /** Subscibe to messages for  */
-  on(
+  /** Subscibe to messages for method, modern IOPA api */
+  on(method: string, listener: (context: FlipperIopaContext) => void): void
+
+  /** Subscibe to messages for method, compatible with react-native API */
+  receive(
     method: string,
-    listener: (params: any, responder: FlipperResponder) => void
+    listener: (body: any, responder: FlipperResponder) => void
   ): void
 
-  listeners: Map<string, (params: any, responder: FlipperResponder) => void>
+  listeners: Map<string, (context: FlipperIopaContext) => void>
 }
 
 /*
@@ -82,22 +101,19 @@ export interface FlipperBridge {
     payload: Payload<string, string>
   ): Single<Payload<string, string>>
 
-  start(): void
+  start(): Promise<void>
   stop(): void
-  isReady: Promise<void>
 }
 
 /**
  * Internal api to connect to the Desktop module, not for general use;
- * Every plugin gets a FlipperConnection and every inbound method
- * gets a Flipper REsponder
+ * Every plugin gets a FlipperConnection / FlipperIopaConnection and every inbound method
+ * gets a Flipper Responder
  */
 export interface FlipperClient {
   //
   // Life Cycle Properties and Methods
   //
-  readonly isReady: Promise<void>
-
   addPlugin(plugin: FlipperPlugin): void
 
   getPlugin(id: string): FlipperPlugin | null

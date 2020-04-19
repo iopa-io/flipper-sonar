@@ -43,8 +43,7 @@ async function init() {
   client.addPlugin(sonarCrashReporter)
   // your plugins here
   client.addPlugin(sample)
-  client.start()
-  await client.isReady
+  await client.start()
   console.log('NODE CLIENT READY READY')
   sonarLogger.log('HELLO WORLD')
   setTimeout(
@@ -109,6 +108,15 @@ To see the compilation errors for your custom plugins, run Flipper (production e
 /Applications/Flipper.app/Contents/MacOS/Flipper
 ```
 
+### Mac device does not auto expand in Flipper
+
+The Mac device is considered a blacklisted device for the Flipper UI which means it does not auto expand in the device selection on the left.
+Change `Applications/Flipper.app/Contents/Resources/app/bundle.js` 
+
+``` js
+const DEFAULT_DEVICE_BLACKLIST = [];
+```
+
 ### SHA1 error
 If you get an SHA1 error upon compilation, its likely due to the symlink issue.
 
@@ -137,6 +145,20 @@ switch (true) {
     case plugin.id === 'flipper-plugin-sonar-crash-reporter' ||
       plugin.id === 'Navigation': // Navigation events are always processed, to make sure the navbar stays up to date
 ```
+
+### Brand Colors
+
+Change `Applications/Flipper.app/Contents/Resources/app/bundle.js` to include 
+
+``` js
+  const brandColors = {
+    Facebook: '#0D7BED',
+    Messenger: '#0088FA',
+    Instagram: '#E61E68',
+    Flipper: '#8155cb',
+    'Karla Simulator': '#8B3765'
+  };
+  ```
 
 ### Flipper App
 

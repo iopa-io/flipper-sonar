@@ -1,8 +1,8 @@
-export { default, addPlugin } from './flipper/flipper-bridge'
+export { default, addPlugin } from './flipper/flipper-bridge-tls'
 export {
   FlipperBridge,
   FlipperClient,
   FlipperConnection,
   FlipperPlugin,
   FlipperResponder
-} from './flipper/flipper-types'
+} from 'flipper-sonar-sdk'

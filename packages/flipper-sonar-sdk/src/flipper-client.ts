@@ -5,14 +5,18 @@
 import { Single } from 'rsocket-flowable'
 import { Payload } from 'rsocket-types'
 import { IFutureSubject } from 'rsocket-flowable/Single'
+import { asyncSubscribe } from './util/async-rsocket'
 import {
   FlipperBridge,
   FlipperClient,
   FlipperConnection,
   FlipperPlugin,
-  FlipperResponder
+  FlipperResponder,
+  FlipperIopaRequest,
+  FlipperIopaContext
 } from './flipper-types'
-import { asyncSubscribe } from '../util/async-rsocket'
+
+declare const console
 
 class FlipperClientConnection implements FlipperConnection {
   private bridge: FlipperBridge
@@ -21,7 +25,7 @@ class FlipperClientConnection implements FlipperConnection {
 
   public listeners: Map<
     string,
-    (params: any, responder: FlipperResponder) => void
+    (context: FlipperIopaContext) => void
   > = new Map()
 
   constructor(id: string, bridge: FlipperBridge) {
@@ -29,9 +33,20 @@ class FlipperClientConnection implements FlipperConnection {
     this.pluginId = id
   }
 
-  send<D>(method: string, params: D) {
+  send<D>(contextOrMethod: string | FlipperIopaRequest, params?: D) {
+    let method: string
+    let body: D
+
+    if (params) {
+      method = contextOrMethod as string
+      body = params
+    } else {
+      method = (contextOrMethod as FlipperIopaRequest)['iopa.Method']
+      body = (contextOrMethod as FlipperIopaRequest)['iopa.Body']
+    }
+
     this.bridge.fireAndForget({
-      data: JSON.stringify({
+      data: jsonSerialize({
         method: 'execute',
         params: {
           api: this.pluginId,
@@ -42,10 +57,24 @@ class FlipperClientConnection implements FlipperConnection {
     })
   }
 
-  async fetch<D, R>(method: string, params: D): Promise<R> {
+  async fetch<D, R>(
+    contextOrMethod: string | FlipperIopaRequest,
+    params?: D
+  ): Promise<R> {
+    let method: string
+    let body: D
+
+    if (params) {
+      method = contextOrMethod as string
+      body = params
+    } else {
+      method = (contextOrMethod as FlipperIopaRequest)['iopa.Method']
+      body = (contextOrMethod as FlipperIopaRequest)['iopa.Body']
+    }
+
     const response = await asyncSubscribe(
       this.bridge.requestResponse({
-        data: JSON.stringify({
+        data: jsonSerialize({
           method: 'execute',
           params: {
             api: this.pluginId,
@@ -59,10 +88,16 @@ class FlipperClientConnection implements FlipperConnection {
     return JSON.parse(response.data)
   }
 
-  on(
+  receive(
     method: string,
     listener: (params: any, responder: FlipperResponder) => void
   ) {
+    this.listeners.set(method, context =>
+      listener(context['iopa.Body'], context.response)
+    )
+  }
+
+  on(method: string, listener: (context: FlipperIopaContext) => void) {
     this.listeners.set(method, listener)
   }
 }
@@ -91,8 +126,10 @@ class FlipperClientResponder implements FlipperResponder {
 
   async success(data) {
     await this.isReady
+    const result = jsonSerialize({ success: data })
+
     this.subscriber.onComplete({
-      data: JSON.stringify(data)
+      data: result
     })
     this.subscriber = undefined
     this.single = undefined
@@ -139,15 +176,11 @@ class FlipperErrorResponder implements FlipperResponder {
 }
 
 export default class FlipperDeviceClient implements FlipperClient {
-  bridge: FlipperBridge
+  public bridge: FlipperBridge
 
-  get isReady(): Promise<void> {
-    return this.bridge.isReady
-  }
+  protected plugins: Map<string, FlipperPlugin> = new Map()
 
-  plugins: Map<string, FlipperPlugin> = new Map()
-
-  connections: Map<string, FlipperConnection> = new Map()
+  protected connections: Map<string, FlipperConnection> = new Map()
 
   constructor(bridge: FlipperBridge) {
     this.bridge = bridge
@@ -194,7 +227,7 @@ export default class FlipperDeviceClient implements FlipperClient {
 
     const { method, params }: { method: string; params?: any } = data
 
-    console.log('Flipper client onRequestResponse', data)
+    console._log('Flipper client onRequestResponse', data)
 
     const responder = new FlipperClientResponder(this.bridge)
 
@@ -206,7 +239,7 @@ export default class FlipperDeviceClient implements FlipperClient {
         this.execute(params, responder)
         break
       default:
-        responder.success({ success: null })
+        responder.success(null)
         break
     }
 
@@ -223,7 +256,7 @@ export default class FlipperDeviceClient implements FlipperClient {
 
     const errorResponder = new FlipperErrorResponder(this.bridge)
 
-    console.log('Flipper client onFireForget', data)
+    console._log('Flipper client onFireForget', data)
 
     switch (method) {
       case 'init':
@@ -245,9 +278,7 @@ export default class FlipperDeviceClient implements FlipperClient {
 
   protected getPlugins(responder: FlipperResponder): void {
     responder.success({
-      success: {
-        plugins: Array.from(this.plugins.keys())
-      }
+      plugins: Array.from(this.plugins.keys())
     })
   }
 
@@ -360,6 +391,26 @@ export default class FlipperDeviceClient implements FlipperClient {
     }
 
     const receiver = listeners.get(method)
-    receiver(params, responder)
+
+    receiver({
+      'iopa.Method': method,
+      'iopa.Body': params,
+      response: responder
+    })
   }
 }
+
+const getCircularReplacer = () => {
+  const seen = new WeakSet()
+  return (key, value) => {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return undefined
+      }
+      seen.add(value)
+    }
+    return value
+  }
+}
+
+const jsonSerialize = data => JSON.stringify(data)
