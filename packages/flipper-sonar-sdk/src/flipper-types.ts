@@ -120,7 +120,8 @@ export interface FlipperClient {
 
   removePlugin(plugin: FlipperPlugin): void
 
-  start(): void
+  /** Start the connection to the Flipper Desktop, initiate plugins and resolve promise when bridge is connected */
+  start(): Promise<void>
 
   stop(): void
 

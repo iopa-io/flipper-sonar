@@ -12,7 +12,8 @@
     "rsocket-tcp-client": "^0.0.19",
     "rsocket-types": "^0.0.16",
     "tmp": "^0.1.0",
-    "exponential-backoff": "^3.0.0"
+    "exponential-backoff": "^3.0.0",
+    "flipper-ssdp": "^1.0.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.0",

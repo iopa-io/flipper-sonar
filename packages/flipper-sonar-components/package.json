@@ -1,0 +1,13 @@
+{
+  "name": "flipper-sonar-components",
+  "version": "1.0.0",
+  "description": "Customized components for the Flipper Sonar Design Systme",
+  "main": "src/index.tsx",
+  "repository": "https://github.com/iopa-io/flipper-sonar",
+  "license": "MIT",
+  "dependencies": {
+    "flipper": "^0.37.0"
+  },
+  "devDependencies": {
+  }
+}

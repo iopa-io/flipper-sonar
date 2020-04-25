@@ -1,0 +1,17 @@
+{
+  "name": "flipper-plugin-sonar-desktop-discovery",
+  "version": "1.0.0",
+  "description": "The core device plugin for SONAR Desktop",
+  "main": "desktop/index.tsx",
+  "repository": "https://github.com/iopa-io/flipper-sonar",
+  "license": "MIT",
+  "keywords": ["flipper-plugin", "sonar-plugin"],
+  "title": "Sync SONAR",
+  "dependencies": {
+    "unicode-substring": "^1.0.0"
+  },
+  "devDependencies": {
+    "flipper": "^0.37.0",
+    "@berun/scripts": "^3.0.19"
+  }
+}

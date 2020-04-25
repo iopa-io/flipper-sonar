@@ -257,7 +257,7 @@ const PluginView: React.FC<{}> = () => {
             <>
               <Button onClick={handleClear}>
                 <Glyph title="Clear" name="trash" />
-                sdfsdf
+                Clear
               </Button>
             </>
           }

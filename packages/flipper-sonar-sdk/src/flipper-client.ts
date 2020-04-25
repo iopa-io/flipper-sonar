@@ -198,8 +198,8 @@ export default class FlipperDeviceClient implements FlipperClient {
     this.plugins.delete(plugin.id)
   }
 
-  public start() {
-    this.bridge.start()
+  public start(): Promise<void> {
+    const bridgeReady = this.bridge.start()
     this.plugins.forEach((plugin, id) => {
       if (plugin.runInBackground()) {
         const connection = new FlipperClientConnection(id, this.bridge)
@@ -207,6 +207,7 @@ export default class FlipperDeviceClient implements FlipperClient {
         plugin.onConnect(connection)
       }
     })
+    return bridgeReady
   }
 
   public stop() {
@@ -413,4 +414,4 @@ const getCircularReplacer = () => {
   }
 }
 
-const jsonSerialize = data => JSON.stringify(data)
+const jsonSerialize = data => JSON.stringify(data, getCircularReplacer())
