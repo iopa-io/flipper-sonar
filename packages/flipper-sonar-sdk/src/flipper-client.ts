@@ -228,7 +228,7 @@ export default class FlipperDeviceClient implements FlipperClient {
 
     const { method, params }: { method: string; params?: any } = data
 
-    console._log('Flipper client onRequestResponse', data)
+  //  console._log('Flipper client onRequestResponse', data)
 
     const responder = new FlipperClientResponder(this.bridge)
 
@@ -257,7 +257,7 @@ export default class FlipperDeviceClient implements FlipperClient {
 
     const errorResponder = new FlipperErrorResponder(this.bridge)
 
-    console._log('Flipper client onFireForget', data)
+    // console._log('Flipper client onFireForget', data)
 
     switch (method) {
       case 'init':

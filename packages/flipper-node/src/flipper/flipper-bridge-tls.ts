@@ -163,7 +163,7 @@ class FlipperBridgeTls implements FlipperBridge {
           })
 
           try {
-          return asyncSubscribe(untrustedRSocketClient.connect())
+            return asyncSubscribe(untrustedRSocketClient.connect())
           } catch (ex) {
             this.reset()
           }
