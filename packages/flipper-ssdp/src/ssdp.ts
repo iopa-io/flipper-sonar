@@ -85,11 +85,18 @@ export class SsdpSocket extends events.EventEmitter {
   }
 
   protected get alHost() {
-    return JSON.stringify(Object.fromEntries(Object.keys(this.options.alPorts).map(key => ([key,{
-      host: this.addresses[0],
-      port: this.options.alPorts[key],
-      family: this.options.family
-    }]))))
+    return JSON.stringify(
+      Object.fromEntries(
+        Object.keys(this.options.alPorts).map(key => [
+          key,
+          {
+            host: this.addresses[0],
+            port: this.options.alPorts[key],
+            family: this.options.family
+          }
+        ])
+      )
+    )
   }
 
   public get addresses() {
@@ -100,8 +107,10 @@ export class SsdpSocket extends events.EventEmitter {
     super()
     const {
       ssdpPort = SSDP_PORT,
-      ssdpAddress = (options || {}).family === 'IPv4' ? SSDP_ADDRESS_IPV4 : SSDP_ADDRESS_IPV4,
-      family = 'IPv4', //v6 not currently supported
+      ssdpAddress = (options || {}).family === 'IPv4'
+        ? SSDP_ADDRESS_IPV4
+        : SSDP_ADDRESS_IPV4,
+      family = 'IPv4', // v6 not currently supported
       alPorts = {}
     } = options || {}
     this.options = { ssdpPort, family, ssdpAddress, alPorts }
@@ -182,35 +191,56 @@ export class SsdpSocket extends events.EventEmitter {
   ): Promise<[SsdpHeaders, RemoteInfo]> {
     await this.search(headers)
 
-    return promiseTimeout(
-      ms,
-      new Promise<[SsdpHeaders, RemoteInfo]>((resolve, reject) => {
-        this.on('found', (foundHeaders: SsdpHeaders, address: RemoteInfo) => {
-          if (foundHeaders.ST === headers.ST) {
-            resolve([foundHeaders, address])
-          }
-        })
-      })
-    )
+    return new Promise<any>((resolve, reject) => {
+      let called = false
+
+      const handlerProxy = (foundHeaders: SsdpHeaders, address: RemoteInfo) => {
+        if (foundHeaders.ST === headers.ST) {
+          this.removeListener('found', handlerProxy)
+          called = true
+          clearTimeout(timerId)
+          resolve([foundHeaders, address])
+        }
+      }
+
+      const timerId = setTimeout(() => {
+        this.removeListener('found', handlerProxy)
+        if (!called) {
+          reject(new Error(`Timed out in ${ms}ms.`))
+        }
+      }, ms)
+
+      this.on('found', handlerProxy)
+    })
   }
 
   async getAnnounceFirst(
     headers: SsdpHeaders,
     ms: number
   ): Promise<[SsdpHeaders, RemoteInfo]> {
-    return promiseTimeout(
-      ms,
-      new Promise<[SsdpHeaders, RemoteInfo]>((resolve, reject) => {
-        this.on('notify', (foundHeaders: SsdpHeaders, address: RemoteInfo) => {
-          if (
-            foundHeaders.NTS === 'ssdp:alive' &&
-            foundHeaders.NT === headers.NT
-          ) {
-            resolve([foundHeaders, address])
-          }
-        })
-      })
-    )
+    return new Promise<any>((resolve, reject) => {
+      let called = false
+
+      const handlerProxy = (foundHeaders: SsdpHeaders, address: RemoteInfo) => {
+        if (
+          foundHeaders.NTS === 'ssdp:alive' &&
+          foundHeaders.NT === headers.NT
+        ) {
+          this.removeListener('notify', handlerProxy)
+          called = true
+          clearTimeout(timerId)
+          resolve([foundHeaders, address])
+        }
+      }
+
+      const timerId = setTimeout(() => {
+        this.removeListener('notify', handlerProxy)
+        if (!called) {
+          reject(new Error(`Timed out in ${ms}ms.`))
+        }
+      }, ms)
+      this.on('notify', handlerProxy)
+    })
   }
 
   waitUntil(event: string, ms: number): Promise<[SsdpHeaders, RemoteInfo]> {
@@ -223,7 +253,6 @@ export class SsdpSocket extends events.EventEmitter {
     headers.EXT = headers.EXT || ''
     headers.DATE = headers.DATE || new Date().toUTCString()
 
-  
     if (Object.keys(this.options.alPorts).length > 0) {
       headers.AL = this.alHost
     }
@@ -285,7 +314,11 @@ class SocketManager {
       const infoArray = interfaces[key]
       infoArray.forEach(info => {
         if (info.family === this.options.family && !info.internal) {
-          this.onNewInterface(this.options.family === 'IPv6' ? `${info.address}::%${key}` : info.address)
+          this.onNewInterface(
+            this.options.family === 'IPv6'
+              ? `${info.address}::%${key}`
+              : info.address
+          )
         }
       })
     })
@@ -298,7 +331,11 @@ class SocketManager {
         const infoArray = interfaces[key]
         infoArray.forEach(info => {
           if (info.family === this.options.family && !info.internal) {
-            currentInterfaces[this.options.family === 'IPv6' ? `${info.address}::%${key}` : info.address] = true
+            currentInterfaces[
+              this.options.family === 'IPv6'
+                ? `${info.address}::%${key}`
+                : info.address
+            ] = true
           }
         })
       })
@@ -394,7 +431,7 @@ class SocketManager {
     }
 
     const unicastSocket = dgram.createSocket({
-      type: this.options.family === 'IPv6' ? 'udp6': 'udp4',
+      type: this.options.family === 'IPv6' ? 'udp6' : 'udp4',
       reuseAddr: true
     })
 
@@ -410,7 +447,7 @@ class SocketManager {
 
     this.socketMap[adr].unicast = unicastSocket
     const multicastSocket = dgram.createSocket({
-      type: this.options.family === 'IPv6' ? 'udp6': 'udp4',
+      type: this.options.family === 'IPv6' ? 'udp6' : 'udp4',
       reuseAddr: true
     })
 
@@ -563,9 +600,7 @@ function eventTimeout<T>(
     const listener = (...args) => {
       resolve(args)
     }
-    console.log(
-      'eventTimeout set'
-    )
+    console.log('eventTimeout set')
     emitter.once(event, listener)
     cleanup = () => {
       emitter.off(event, listener)

@@ -4,7 +4,6 @@
  */
 import { Single } from 'rsocket-flowable'
 import { Payload } from 'rsocket-types'
-import { IFutureSubject } from 'rsocket-flowable/Single'
 import { asyncSubscribe } from './util/async-rsocket'
 import {
   FlipperBridge,
@@ -15,6 +14,12 @@ import {
   FlipperIopaRequest,
   FlipperIopaContext
 } from './flipper-types'
+
+interface IFutureSubject<T> {
+  onComplete: (value: T) => void
+  onError: (error: Error) => void
+  onSubscribe: (cancel: any) => void
+}
 
 declare const console
 
@@ -228,7 +233,7 @@ export default class FlipperDeviceClient implements FlipperClient {
 
     const { method, params }: { method: string; params?: any } = data
 
-  //  console._log('Flipper client onRequestResponse', data)
+    //  console._log('Flipper client onRequestResponse', data)
 
     const responder = new FlipperClientResponder(this.bridge)
 

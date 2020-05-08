@@ -33,7 +33,7 @@ export default class DiscoveryWatcher {
     this.ssdp = ssdp
 
     const isReady = new Promise<void>((resolve, _) => {
-      ssdp.on('ready', () => {
+      ssdp.once('ready', () => {
         resolve()
       })
     })
