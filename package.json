@@ -7,10 +7,9 @@
     "flipper": "^0.37.0",
     "react": "^16.13.1",
     "@types/react": "^16.9.34",
-    "typescript": "^3.8.3"
+    "typescript": "3.9.2"
   },
-  "resolutions": {
-  },
+  "resolutions": {},
   "scripts": {
     "clean": "rimraf **/node_modules && rimraf **/yarn.lock && rimraf **/dist"
   },

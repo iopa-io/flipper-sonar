@@ -222,7 +222,7 @@ class FlipperBridgeTls implements FlipperBridge {
               socket
             }
 
-            socket.on('error', er => {
+            socket.on('error', (er) => {
               console.log('-----ERROR-----', er)
               reject(er)
             })
@@ -256,7 +256,7 @@ class FlipperBridgeTls implements FlipperBridge {
                 fireAndForget: this.flipperClient.onFireForget,
                 requestResponse: this.flipperClient.onRequestResponse
               },
-              errorHandler: err => {
+              errorHandler: (err) => {
                 console.error('errorHandler', err)
                 this.reset()
               }

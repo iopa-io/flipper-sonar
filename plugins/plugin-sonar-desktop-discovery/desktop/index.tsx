@@ -52,5 +52,5 @@ export default class SonarDesktopDiscovery extends FlipperDevicePlugin<
 const markdown=`
 # Getting Started
 
-Run the Sync SONAR Simulator on the desktop.   You'll see the device automatically appear in the side bar on the left.
+Run the Sync SIM simulator on the desktop.   You'll see the device automatically appear in the side bar on the left.
 `

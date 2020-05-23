@@ -1,4 +1,4 @@
-# Flipper Sonar SDK -- for Node, Electron and Browser
+# Flipper SONAR SDK -- for Node, Electron and Browser
 
 This is the mono repository containing Custom [Flipper](https://fbflipper.com) Client for Node, Electron and Browser based applications.
 

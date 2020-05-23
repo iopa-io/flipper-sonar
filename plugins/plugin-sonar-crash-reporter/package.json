@@ -3,15 +3,22 @@
   "version": "1.0.0",
   "description": "A plugin which will display a crash, used on non iOS/Android/Metro platforms",
   "main": "desktop/index.tsx",
-  "repository": "https://github.com/iopa-io/flipper-sonar",
+  "keywords": [
+    "flipper-plugin",
+    "sonar-plugin"
+  ],
   "license": "MIT",
-  "keywords": ["flipper-plugin", "sonar-plugin"],
+  "repository": "https://github.com/iopa-io/flipper-sonar",
   "title": "Errors and Crashes",
   "dependencies": {
+    "flipper": "^0.37.0",
     "unicode-substring": "^1.0.0"
   },
   "devDependencies": {
     "flipper": "^0.37.0",
-    "@berun/scripts": "^3.0.19"
+    "@berun/scripts": "^3.0.20"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1"
   }
 }
