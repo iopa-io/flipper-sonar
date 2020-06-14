@@ -214,7 +214,7 @@ const PluginView: React.FC<{}> = () => {
           filterValue: row.logType
         },
         message: {
-          value: <Text>{row.message || ''}</Text>,
+          value: <Text>{row.message.toString() || ''}</Text>,
           filterValue: row.message
         }
       },
